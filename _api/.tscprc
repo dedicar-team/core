@@ -1,0 +1,16 @@
+{
+  "ignored_files": [
+    "./node_modules",
+    "./**/*.ts",
+    "./.dist",
+    "./.turbo",
+    "*.bashrc",
+    "*.env",
+    "*.gitignore",
+    "*.tscprc",
+    "*.json",
+    "*.sh"
+  ],
+  "compiled_files": [],
+  "use_ts_exclude": true
+}

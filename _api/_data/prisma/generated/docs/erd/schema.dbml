@@ -1,0 +1,304 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table person {
+  id String [pk, unique]
+  name String [not null]
+  birthDate DateTime [not null]
+  sex SEX [not null]
+  photo String
+  archive String
+  deletedAt DateTime
+  Credential credential
+  Address address
+  Patient patient
+  Body body
+  Contacts contact [not null]
+  Observations observation [not null]
+  BankAccounts bank_account [not null]
+}
+
+Table observation {
+  id String [pk, unique]
+  title String [not null]
+  text String [not null]
+  createdAt DateTime [default: `now()`]
+  personId String [not null]
+  Person person [not null]
+}
+
+Table address {
+  personId String [pk, unique]
+  publicPlace String [not null]
+  number String [not null]
+  district String [not null]
+  city String [not null]
+  CEP String [not null]
+  complement String
+  reference String
+  Person person [not null]
+}
+
+Table contact {
+  id String [pk, unique]
+  type CONTACT_TYPE [not null]
+  data String [not null]
+  observation String
+  personId String [not null]
+  Person person [not null]
+}
+
+Table patient {
+  personId String [pk, unique]
+  costumerId String
+  contractId String
+  Person person [not null]
+  Costumer costumer
+  Contract contract
+  diseases DISEASE[] [not null]
+}
+
+Table bank_account {
+  id String [pk, unique]
+  name String [not null]
+  type BANK_ACCOUNT_TYPE [not null]
+  agency String [not null]
+  account String [not null]
+  digit String [not null]
+  personId String [not null]
+  Person person [not null]
+}
+
+Table body {
+  personId String [pk, unique]
+  weight WEIGHT [not null]
+  height HEIGHT [not null]
+  mannequinn MANNEQUINN [not null]
+  person person [not null]
+}
+
+Table contract {
+  id String [pk, unique]
+  costumerId String [not null]
+  timeScale TIME_SCALE [not null]
+  initAt DateTime [not null]
+  endAt DateTime [not null]
+  createdAt DateTime
+  acceptedAt DateTime
+  canceledAt DateTime
+  value String [not null]
+  salary String [not null]
+  archives String[] [not null]
+  Payments contract_payment [not null]
+  Patients patient [not null]
+  Costumer costumer [not null]
+  ContractJourney contract_journey [not null]
+  CaregiverToContract caregiver_to_contract [not null]
+}
+
+Table contract_payment {
+  id String [pk, unique]
+  contractId String [not null]
+  value String [not null]
+  createdAt DateTime [default: `now()`]
+  proof String [not null]
+  Contract contract [not null]
+}
+
+Table contract_journey {
+  id String [pk, unique]
+  caregiverOrder String[] [not null]
+  createdAt DateTime [default: `now()`]
+  contractId String [not null]
+  contract contract [not null]
+}
+
+Table caregiver_to_contract {
+  id String [pk, unique]
+  contractId String [not null]
+  caregiverId String [not null]
+  Contract contract [not null]
+  Caregiver caregiver [not null]
+  CaregiverPayment caregiver_payment [not null]
+}
+
+Table caregiver_payment {
+  id String [pk, unique]
+  value String [not null]
+  createdAt DateTime [default: `now()`]
+  proof String [not null]
+  caregiverToContractId String [not null]
+  CaregiverToContract caregiver_to_contract [not null]
+}
+
+Table caregiver {
+  workerId String [pk, unique]
+  smoker Boolean [not null]
+  allergyReport String [not null]
+  uniqueTicket String [unique, not null]
+  availableTimeScales TIME_SCALE[] [not null]
+  diseaseExperiences DISEASE[] [not null]
+  Worker worker [not null]
+  CaregiverToContract caregiver_to_contract [not null]
+}
+
+Table worker {
+  credentialId String [pk, unique]
+  PIS String [unique, not null]
+  dependents Int [not null, default: 0]
+  workerStatus WORKER_STATUS [not null]
+  civilStatus CIVIL_STATUS [not null]
+  Credential credential [not null]
+  Caregiver caregiver
+}
+
+Table admin {
+  credentialId String [pk, unique]
+  administrativeLevel ADMINISTRATIVE_LEVEL [not null]
+  Credential credential [not null]
+}
+
+Table credential {
+  personId String [pk, unique]
+  email String [unique, not null]
+  CPF String [unique, not null]
+  RG String [unique, not null]
+  Person person [not null]
+  Worker worker
+  Admin admin
+  Costumer costumer
+}
+
+Table costumer {
+  credentialId String [pk, unique]
+  favoriteScales TIME_SCALE[] [not null]
+  Credential credential [not null]
+  Patients patient [not null]
+  Contract contract [not null]
+}
+
+Enum SEX {
+  M
+  F
+}
+
+Enum CONTACT_TYPE {
+  CELLPHONE
+  TELEPHONE
+}
+
+Enum BANK_ACCOUNT_TYPE {
+  CHECKING
+  SAVINGS
+  SALARY
+}
+
+Enum MANNEQUINN {
+  PP
+  P
+  M
+  G
+  GG
+  GGG
+}
+
+Enum WEIGHT {
+  RICKETY
+  SKINNY
+  NORMAL
+  STRONG
+  OBESE
+}
+
+Enum HEIGHT {
+  MIDGET
+  SMALL
+  NORMAL
+  TALL
+  GIANT
+}
+
+Enum TIME_SCALE {
+  HOUR_24
+  HOUR_24X24
+  HOUR_24X48
+  HOUR_12X36
+  HOUR_48X48
+  WEEKDAY
+  WEEKEND
+  WILDCARD
+}
+
+Enum DISEASE {
+  ELDERLY
+  WHELLCHAIR
+  BED
+  GLUCOSE
+  HIGH_PRESSURE
+  PARKISON
+  ALZHEIMER
+  DEMENTIA
+  COLOSTOMY
+  AIDS
+  TRACHEOSTOMY
+  GASTROTOMY
+}
+
+Enum WORKER_STATUS {
+  WORKING
+  FREE
+  FIRED
+}
+
+Enum CIVIL_STATUS {
+  SINGLE
+  MARRIED
+  SEPARETED
+  DIVORCED
+  WIDOW
+}
+
+Enum ADMINISTRATIVE_LEVEL {
+  READ
+  UPDATE
+  DELETE
+}
+
+Ref: observation.personId > person.id [delete: Cascade]
+
+Ref: address.personId - person.id [delete: Cascade]
+
+Ref: contact.personId > person.id [delete: Cascade]
+
+Ref: patient.personId - person.id [delete: Cascade]
+
+Ref: patient.costumerId > costumer.credentialId
+
+Ref: patient.contractId > contract.id
+
+Ref: bank_account.personId > person.id [delete: Cascade]
+
+Ref: body.personId - person.id [delete: Cascade]
+
+Ref: contract.costumerId > costumer.credentialId [delete: Cascade]
+
+Ref: contract_payment.contractId > contract.id [delete: Cascade]
+
+Ref: contract_journey.contractId > contract.id [delete: Cascade]
+
+Ref: caregiver_to_contract.contractId > contract.id [delete: Cascade]
+
+Ref: caregiver_to_contract.caregiverId > caregiver.workerId [delete: Cascade]
+
+Ref: caregiver_payment.caregiverToContractId > caregiver_to_contract.id [delete: Cascade]
+
+Ref: caregiver.workerId - worker.credentialId [delete: Cascade]
+
+Ref: worker.credentialId - credential.personId [delete: Cascade]
+
+Ref: admin.credentialId - credential.personId [delete: Cascade]
+
+Ref: credential.personId - person.id [delete: Cascade]
+
+Ref: costumer.credentialId - credential.personId [delete: Cascade]

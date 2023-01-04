@@ -1,0 +1,12 @@
+model Observation {
+    id String @id @unique @default(uuid()) @db.Uuid
+
+    title     String
+    text      String
+    createdAt DateTime? @default(now()) @map("created_at") @db.Date
+
+    personId String @map("person_id") @db.Uuid
+    Person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+    @@map("observation")
+}

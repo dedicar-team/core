@@ -1,0 +1,28 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../generated/client"
+  binaryTargets = ["darwin", "windows", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+  output   = "../generated/docs/erd"
+}
+
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+  output   = "../generated/docs/client"
+}
+
+// generator trpc {
+//   provider       = "prisma-trpc-generator"
+//   output         = "../generated/trpc"
+//   withMiddleware = false
+//   withShield     = false
+//   contextPath    = "../src/generated/trpc"
+// }

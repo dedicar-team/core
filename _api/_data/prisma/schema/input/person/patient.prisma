@@ -1,0 +1,13 @@
+model Patient {
+    personId   String  @id @unique @map("person_id") @db.Uuid
+    costumerId String? @map("costumer_id") @db.Uuid
+    contractId String? @map("contract_id") @db.Uuid
+
+    Person   Person    @relation(fields: [personId], references: [id], onDelete: Cascade)
+    Costumer Costumer? @relation(fields: [costumerId], references: [credentialId], onUpdate: Cascade)
+    Contract Contract? @relation(fields: [contractId], references: [id], onUpdate: Cascade)
+
+    diseases DISEASE[]
+
+    @@map("patient")
+}

@@ -1,0 +1,16 @@
+model Address {
+    personId String @id @unique @map("person_id") @db.Uuid
+
+    publicPlace String  @map("public_place")
+    number      String
+    district    String
+    city        String
+    CEP         String  @map("cep")
+
+    complement  String?
+    reference   String?
+
+    Person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+    @@map("address")
+}

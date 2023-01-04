@@ -1,0 +1,24 @@
+model Contract {
+    id         String @id @unique @default(uuid()) @db.Uuid
+    costumerId String @map("costumer_id") @db.Uuid
+
+    timeScale TIME_SCALE @map("time_scale")
+
+    initAt     DateTime  @map("init_at") @db.Date
+    endAt      DateTime  @map("end_at") @db.Date
+    createdAt  DateTime? @map("created_at") @db.Date
+    acceptedAt DateTime? @map("accepted_at") @db.Date
+    canceledAt DateTime? @map("canceled_at") @db.Date
+
+    value  String
+    salary String
+
+    archives String[]
+
+    Payments ContractPayment[]
+    Patients Patient[]
+
+    Costumer Costumer @relation(fields: [costumerId], references: [credentialId], onDelete: Cascade)
+
+    @@map("contract")
+}

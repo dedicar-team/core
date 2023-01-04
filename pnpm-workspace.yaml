@@ -1,3 +1,6 @@
 packages:
-  - "apps/*"
-  - "packages/*"
+  - "_api/"
+  - "_configs/*"
+  - "_docs/"
+  - "_interfaces/*"
+  - "_shared/*"

@@ -1,0 +1,17 @@
+enum CONTACT_TYPE {
+    CELLPHONE @map("cellphone")
+    TELEPHONE @map("telephone")
+}
+
+model Contact {
+    id          String       @id @unique @default(uuid()) @db.Uuid
+    
+    type        CONTACT_TYPE
+    data        String
+    observation String?
+
+    personId String @map("person_id") @db.Uuid
+    Person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+    @@map("contact")
+}

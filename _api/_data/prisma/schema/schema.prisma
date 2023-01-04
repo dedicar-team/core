@@ -1,0 +1,379 @@
+enum SEX {
+  M
+  F
+
+  @@map("sex")
+}
+
+model Person {
+  id        String    @id @unique @default(uuid()) @db.Uuid
+  name      String
+  birthDate DateTime  @map("birth_date") @db.Date
+  sex       SEX
+  photo     String?
+  archive   String?
+  deletedAt DateTime? @map("deleted_at") @db.Date
+
+  Credential Credential?
+  Address    Address?
+  Patient    Patient?
+  Body       Body?
+
+  Contacts     Contact[]
+  Observations Observation[]
+  BankAccounts BankAccount[]
+
+  @@map("person")
+}
+
+model Observation {
+  id String @id @unique @default(uuid()) @db.Uuid
+
+  title     String
+  text      String
+  createdAt DateTime? @default(now()) @map("created_at") @db.Date
+
+  personId String @map("person_id") @db.Uuid
+  Person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@map("observation")
+}
+
+model Address {
+  personId String @id @unique @map("person_id") @db.Uuid
+
+  publicPlace String @map("public_place")
+  number      String
+  district    String
+  city        String
+  CEP         String @map("cep")
+
+  complement String?
+  reference  String?
+
+  Person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@map("address")
+}
+
+enum CONTACT_TYPE {
+  CELLPHONE @map("cellphone")
+  TELEPHONE @map("telephone")
+}
+
+model Contact {
+  id String @id @unique @default(uuid()) @db.Uuid
+
+  type        CONTACT_TYPE
+  data        String
+  observation String?
+
+  personId String @map("person_id") @db.Uuid
+  Person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@map("contact")
+}
+
+model Patient {
+  personId   String  @id @unique @map("person_id") @db.Uuid
+  costumerId String? @map("costumer_id") @db.Uuid
+  contractId String? @map("contract_id") @db.Uuid
+
+  Person   Person    @relation(fields: [personId], references: [id], onDelete: Cascade)
+  Costumer Costumer? @relation(fields: [costumerId], references: [credentialId], onUpdate: Cascade)
+  Contract Contract? @relation(fields: [contractId], references: [id], onUpdate: Cascade)
+
+  diseases DISEASE[]
+
+  @@map("patient")
+}
+
+enum BANK_ACCOUNT_TYPE {
+  CHECKING @map("checking")
+  SAVINGS  @map("savings")
+  SALARY   @map("salary")
+
+  @@map("bank_account_type")
+}
+
+model BankAccount {
+  id String @id @unique @default(uuid()) @db.Uuid
+
+  name    String
+  type    BANK_ACCOUNT_TYPE
+  agency  String
+  account String
+  digit   String
+
+  personId String @map("person_id") @db.Uuid
+  Person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@map("bank_account")
+}
+
+enum MANNEQUINN {
+  PP
+  P
+  M
+  G
+  GG
+  GGG
+
+  @@map("mannequinn_enum")
+}
+
+enum WEIGHT {
+  RICKETY @map("rickety")
+  SKINNY  @map("skinny")
+  NORMAL  @map("normal")
+  STRONG  @map("strong")
+  OBESE   @map("obese")
+
+  @@map("weight_enum")
+}
+
+enum HEIGHT {
+  MIDGET @map("midget")
+  SMALL  @map("small")
+  NORMAL @map("normal")
+  TALL   @map("tall")
+  GIANT  @map("giant")
+
+  @@map("height_enum")
+}
+
+model Body {
+  personId String @id @unique @map("person_id") @db.Uuid
+
+  weight     WEIGHT
+  height     HEIGHT
+  mannequinn MANNEQUINN
+
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@map("body")
+}
+
+model Contract {
+  id         String @id @unique @default(uuid()) @db.Uuid
+  costumerId String @map("costumer_id") @db.Uuid
+
+  timeScale TIME_SCALE @map("time_scale")
+
+  initAt     DateTime  @map("init_at") @db.Date
+  endAt      DateTime  @map("end_at") @db.Date
+  createdAt  DateTime? @map("created_at") @db.Date
+  acceptedAt DateTime? @map("accepted_at") @db.Date
+  canceledAt DateTime? @map("canceled_at") @db.Date
+
+  value  String
+  salary String
+
+  archives String[]
+
+  Payments ContractPayment[]
+  Patients Patient[]
+
+  Costumer            Costumer              @relation(fields: [costumerId], references: [credentialId], onDelete: Cascade)
+  ContractJourney     ContractJourney[]
+  CaregiverToContract CaregiverToContract[]
+
+  @@map("contract")
+}
+
+model ContractPayment {
+  id         String @id @unique @default(uuid()) @db.Uuid
+  contractId String @map("contract_id") @db.Uuid
+
+  value     String
+  createdAt DateTime? @default(now()) @map("created_at") @db.Date
+  proof     String
+
+  Contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@map("contract_payment")
+}
+
+model ContractJourney {
+  id String @id @unique @db.Uuid
+
+  caregiverOrder String[]  @map("caregiver_order")
+  createdAt      DateTime? @default(now()) @map("created_at") @db.Date
+
+  contractId String   @map("contract_id") @db.Uuid
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@map("contract_journey")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../generated/client"
+  binaryTargets = ["darwin", "windows", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator dbml {
+  provider = "prisma-dbml-generator"
+  output   = "../generated/docs/erd"
+}
+
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+  output   = "../generated/docs/client"
+}
+
+// generator trpc {
+//   provider       = "prisma-trpc-generator"
+//   output         = "../generated/trpc"
+//   withMiddleware = false
+//   withShield     = false
+//   contextPath    = "../src/generated/trpc"
+// }
+model CaregiverToContract {
+  id          String @id @unique @default(uuid()) @db.Uuid
+  contractId  String @map("contract_id") @db.Uuid
+  caregiverId String @map("caregiver_id") @db.Uuid
+
+  Contract         Contract           @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  Caregiver        Caregiver          @relation(fields: [caregiverId], references: [workerId], onDelete: Cascade)
+  CaregiverPayment CaregiverPayment[]
+
+  @@map("caregiver_to_contract")
+}
+
+model CaregiverPayment {
+  id String @id @unique @default(uuid()) @db.Uuid
+
+  value     String
+  createdAt DateTime? @default(now()) @map("created_at") @db.Date
+  proof     String
+
+  caregiverToContractId String              @map("caregiver_to_contract_id") @db.Uuid
+  CaregiverToContract   CaregiverToContract @relation(fields: [caregiverToContractId], references: [id], onDelete: Cascade)
+
+  @@map("caregiver_payment")
+}
+
+enum TIME_SCALE {
+  HOUR_24    @map("24")
+  HOUR_24X24 @map("24x24")
+  HOUR_24X48 @map("24x48")
+  HOUR_12X36 @map("12x36")
+  HOUR_48X48 @map("48x48")
+  WEEKDAY    @map("weekday")
+  WEEKEND    @map("weekend")
+  WILDCARD   @map("wildcard")
+
+  @@map("time_scale")
+}
+
+enum DISEASE {
+  ELDERLY       @map("elderly")
+  WHELLCHAIR    @map("wheelchair")
+  BED           @map("bed")
+  GLUCOSE       @map("glucose")
+  HIGH_PRESSURE @map("high_pressure")
+  PARKISON      @map("parkison")
+  ALZHEIMER     @map("alzheimer")
+  DEMENTIA      @map("dementia")
+  COLOSTOMY     @map("colostomy")
+  AIDS          @map("aids")
+  TRACHEOSTOMY  @map("tracheostomy")
+  GASTROTOMY    @map("gastrostomy")
+
+  @@map("experience")
+}
+
+model Caregiver {
+  workerId            String       @id @unique @map("worker_id") @db.Uuid
+  smoker              Boolean
+  allergyReport       String       @map("allergy_report")
+  uniqueTicket        String       @unique @map("unique_ticket")
+  availableTimeScales TIME_SCALE[] @map("available_time_scales")
+  diseaseExperiences  DISEASE[]    @map("disease_experiences")
+
+  Worker              Worker                @relation(fields: [workerId], references: [credentialId], onDelete: Cascade)
+  CaregiverToContract CaregiverToContract[]
+
+  @@map("caregiver")
+}
+
+enum WORKER_STATUS {
+  WORKING @map("working")
+  FREE    @map("free")
+  FIRED   @map("fired")
+
+  @@map("worker_status")
+}
+
+enum CIVIL_STATUS {
+  SINGLE    @map("single")
+  MARRIED   @map("married")
+  SEPARETED @map("separated")
+  DIVORCED  @map("divorced")
+  WIDOW     @map("widow")
+
+  @@map("civil_status")
+}
+
+model Worker {
+  credentialId String @id @unique @map("credential_id") @db.Uuid
+
+  PIS          String        @unique @map("pis")
+  dependents   Int           @default(0)
+  workerStatus WORKER_STATUS @map("worker_status")
+  civilStatus  CIVIL_STATUS  @map("civil_status")
+
+  Credential Credential @relation(fields: [credentialId], references: [personId], onDelete: Cascade)
+  Caregiver  Caregiver?
+
+  @@map("worker")
+}
+
+enum ADMINISTRATIVE_LEVEL {
+  READ   @map("read")
+  UPDATE @map("update")
+  DELETE @map("delete")
+
+  @@map("administrative_level")
+}
+
+model Admin {
+  credentialId        String               @id @unique @map("credential_id") @db.Uuid
+  administrativeLevel ADMINISTRATIVE_LEVEL @map("administrative_level")
+
+  Credential Credential @relation(fields: [credentialId], references: [personId], onDelete: Cascade)
+
+  @@map("admin")
+}
+
+model Credential {
+  personId String @id @unique @map("person_id") @db.Uuid
+
+  email String @unique
+  CPF   String @unique @map("cpf")
+  RG    String @unique @map("rg")
+
+  Person   Person    @relation(fields: [personId], references: [id], onDelete: Cascade)
+  Worker   Worker?
+  Admin    Admin?
+  Costumer Costumer?
+
+  @@map("credential")
+}
+
+model Costumer {
+  credentialId   String       @id @unique @map("credential_id") @db.Uuid
+  favoriteScales TIME_SCALE[] @map("favorite_scale")
+
+  Credential Credential @relation(fields: [credentialId], references: [personId], onDelete: Cascade)
+  Patients   Patient[]
+  Contract   Contract[]
+
+  @@map("costumer")
+}

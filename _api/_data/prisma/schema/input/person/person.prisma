@@ -1,0 +1,27 @@
+enum SEX {
+    M
+    F
+
+    @@map("sex")
+}
+
+model Person {
+    id        String    @id @unique @default(uuid()) @db.Uuid
+    name      String
+    birthDate DateTime  @map("birth_date") @db.Date
+    sex       SEX
+    photo     String?
+    archive   String?
+    deletedAt DateTime? @map("deleted_at") @db.Date
+
+    Credential Credential?
+    Address    Address?
+    Patient    Patient?
+    Body       Body?
+
+    Contacts     Contact[]
+    Observations Observation[]
+    BankAccounts BankAccount[]
+
+    @@map("person")
+}

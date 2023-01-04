@@ -1,0 +1,42 @@
+enum MANNEQUINN {
+    PP
+    P
+    M
+    G
+    GG
+    GGG
+
+    @@map("mannequinn_enum")
+}
+
+enum WEIGHT {
+    RICKETY @map("rickety")
+    SKINNY  @map("skinny")
+    NORMAL  @map("normal")
+    STRONG  @map("strong")
+    OBESE   @map("obese")
+
+    @@map("weight_enum")
+}
+
+enum HEIGHT {
+    MIDGET @map("midget")
+    SMALL  @map("small")
+    NORMAL @map("normal")
+    TALL   @map("tall")
+    GIANT  @map("giant")
+
+    @@map("height_enum")
+}
+
+model Body {
+    personId   String     @id @unique @map("person_id") @db.Uuid
+    
+    weight     WEIGHT
+    height     HEIGHT
+    mannequinn MANNEQUINN
+
+    person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+    @@map("body")
+}

@@ -1,0 +1,22 @@
+enum BANK_ACCOUNT_TYPE {
+    CHECKING @map("checking")
+    SAVINGS  @map("savings")
+    SALARY   @map("salary")
+
+    @@map("bank_account_type")
+}
+
+model BankAccount {
+    id      String            @id @unique @default(uuid()) @db.Uuid
+    
+    name    String
+    type    BANK_ACCOUNT_TYPE
+    agency  String
+    account String
+    digit   String
+
+    personId String @map("person_id") @db.Uuid
+    Person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+    @@map("bank_account")
+}
