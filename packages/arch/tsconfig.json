@@ -1,0 +1,15 @@
+{
+  "extends": "tsconfig/react-library.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "./*",
+      ],
+    },
+  },
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules"]
+}

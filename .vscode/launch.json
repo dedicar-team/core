@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "web",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/apps/web/node_modules/.bin/next",
+            "runtimeArgs": [
+                "dev"
+            ],
+            "cwd": "${workspaceFolder}/apps/web",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+    ]
+}

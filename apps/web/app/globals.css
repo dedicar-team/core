@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  html {
+    @apply dark:text-white;
+  }
+
+  legend {
+    @apply text-slate-900 dark:text-white;
+  }
+
+  fieldset {
+    @apply dark:border-[#333333];
+  }
+
+  input {
+    @apply dark:border-[#333333] dark:bg-[#000000];
+  }
+
+  select {
+    @apply dark:border-[#333333] dark:bg-[#000000];
+  }
+
+  input[type="radio"] {
+    @apply appearance-none w-[0.9rem] h-[0.9rem] rounded-full border-2 border-[#C0C0C0] bg-[white] dark:bg-[#000000] dark:border-[#666666] outline-none transition duration-300;
+  }
+
+  input[type="radio"]:checked {
+    @apply border-[white] dark:border-[#000000] bg-[#C0C0C0] dark:bg-[#666666] ring-2 ring-[#C0C0C0] dark:ring-[#666666];
+  }
+
+  /* Checkbox styles */
+input[type="checkbox"] {
+    @apply appearance-none w-[1.2rem] h-[1.2rem] rounded border-[1px] border-gray-400 bg-white dark:bg-black dark:border-[#666666] outline-none transition duration-300;
+    position: relative;
+  }
+  
+  /* Checked state */
+  input[type="checkbox"]:checked {
+    @apply border-gray-400 dark:border-[#666666];
+  }
+  
+  /* Checkmark */
+  input[type="checkbox"]:checked::before {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.8rem;
+    @apply text-gray-500 dark:text-[#bbbbbb]
+  }
+}
+
+/* :root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+} */
